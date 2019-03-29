@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <dirent.h>
 #include <sys/stat.h>
+#include <string.h>
 
 /**
  * Main
@@ -34,16 +35,17 @@ int main(int argc, char **argv)
     // Repeatly read and print entries
     while ((ent = readdir(dir)) != NULL)
     {
-        char p2f[sizeof(long long int)];
+        char *path2file = strdup(path);
+        strcat(path2file, "/");
+        strcat(path2file, ent->d_name);
         struct stat buf;
 
-        snprintf(p2f, sizeof(p2f), "%s\t%s/%s", buf.st_size, path, ent->d_name);
-        if (stat(path, &buf) < 0)
+        if (stat(path2file, &buf) < 0)
         {
-            fprintf(2, "File stat failed for %s\n", path);
+            printf("File stat failed for %s\n", path);
             exit(1);
         };
-        // printf("%lld\t%s\n", stat(*ent, &buf), ent->d_name);
+        printf("%ld\t%s\n ", buf.st_size, ent->d_name);
     }
 
     // Close directory
